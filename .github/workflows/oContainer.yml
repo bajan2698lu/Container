@@ -1,0 +1,30 @@
+#include <Container.au3>
+
+$oContainer = _Container_Open("storage", 1)
+
+If @error Then
+    MsgBox(48, 'SENDER', '_Container_Open() failed!')
+    Exit
+EndIf
+
+ShellExecute("RECIEVER.au3")
+Sleep(100)
+
+_Container_PutProperty($oContainer, "ReadyFlag", 0)
+
+$i = 0
+$iTimer = TimerInit()
+
+While TimerDiff($iTimer) < 10000
+    If _Container_GetProperty($oContainer, "ReadyFlag") = 0 Then
+        _Container_PutProperty($oContainer, "Test", $i)
+        _Container_PutProperty($oContainer, "ReadyFlag", 1)
+        $i += 1
+    EndIf
+WEnd
+
+_Container_PutProperty($oContainer, "ReadyFlag", -1)
+Sleep(1000)
+Exit
+
+_Container_Close($oContainer)
